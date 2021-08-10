@@ -2,7 +2,10 @@ package com.paginate.recycler;
 
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.List;
 
 class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -32,6 +35,15 @@ class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             loadingListItemCreator.onBindViewHolder(holder, position);
         } else {
             wrappedAdapter.onBindViewHolder(holder, position);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
+        if (isLoadingRow(position)) {
+            loadingListItemCreator.onBindViewHolder(holder, position);
+        } else {
+            wrappedAdapter.onBindViewHolder(holder, position, payloads);
         }
     }
 
