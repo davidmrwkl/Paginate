@@ -1,10 +1,20 @@
 apply plugin: 'com.android.library'
+apply plugin: "com.jfrog.artifactory"
+apply plugin: "maven-publish"
 
 android {
     defaultConfig {
         compileSdkVersion rootProject.ext.compileSdkVersion
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        versionName "0.5.2"
+        versionCode 2
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
     }
 }
 
@@ -12,4 +22,40 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.2.1"
 }
 
-apply from: rootProject.file('gradle/maven-push.gradle')
+// Maven Publish plugin configuration
+publishing {
+    publications {
+        // define an "aar"-named publication with the specified Maven coordinates
+        aar(MavenPublication) {
+            groupId 'com.github.markomilos'
+            artifactId 'paginate'
+            version '0.5.2'
+            // tell maven to prepare the generated "*.aar" file for publishing
+            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+        }
+    }
+}
+
+// JFrog's Artifactory Gradle publication plugin configuration
+artifactory {
+    // load a non-committed properties file where the credentials are stored
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('artifactory.properties').newDataInputStream())
+    def artifactory_contextUrl = properties.getProperty('artifactory_contextUrl')
+    def artifactory_user = properties.getProperty('artifactory_user')
+    def artifactory_password = properties.getProperty('artifactory_password')
+
+    contextUrl = "${artifactory_contextUrl}"
+    publish {
+        repository {
+            repoKey = 'wikiloc-gradle-release-local'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+        }
+        defaults {
+            // upload the publications (outputs from Maven Publish) defined below:
+            // "aar" is the name of the publication defined above (in the Maven Publish block)
+            publications('aar')
+        }
+    }
+}
