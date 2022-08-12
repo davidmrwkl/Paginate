@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.paginate.R;
 
-/** RecyclerView creator that will be called to create and bind loading list item */
+/**
+ * RecyclerView creator that will be called to create and bind loading list item.
+ */
 public interface LoadingListItemCreator {
 
     /**
@@ -31,7 +33,8 @@ public interface LoadingListItemCreator {
     LoadingListItemCreator DEFAULT = new LoadingListItemCreator() {
         @Override
         public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.loading_row, parent, false);
+            View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.loading_row, parent, false);
             return new RecyclerView.ViewHolder(view) {
             };
         }

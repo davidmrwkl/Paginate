@@ -2,6 +2,7 @@ package com.example.paginate;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -38,9 +39,10 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     // Common options
-    protected int threshold = 4;
-    protected int totalPages = 3;
-    protected int itemsPerPage = 10;
+    protected int threshold = 5;
+    protected int totalPages = 10;
+    protected int initialItems = 2;
+    protected int itemsPerPage = 2;
     protected long networkDelay = 2000;
     protected boolean addLoadingRow = true;
     protected boolean customLoadingListItem = false;
@@ -92,20 +94,20 @@ public abstract class BaseActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(false);
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayShowTitleEnabled(false);
+        }
 
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_closed);
-        drawerLayout.setDrawerListener(drawerToggle);
+        drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
     }
 
     private void setupOptions() {
-
         // Common options
-
         Spinner thresholdView = (Spinner) findViewById(R.id.spinner_threshold);
         final IntegerAdapter thresholdAdapter = new IntegerAdapter(this, new int[]{0, 1, 2, 3, 4, 5, 6, 7});
         thresholdView.setAdapter(thresholdAdapter);
@@ -126,7 +128,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
 
         Spinner pagesView = (Spinner) findViewById(R.id.spinner_pages);
-        final IntegerAdapter pagesAdapter = new IntegerAdapter(this, new int[]{1, 2, 3, 4, 5, 6, 7});
+        final IntegerAdapter pagesAdapter = new IntegerAdapter(this, new int[]{1, 2, 3, 4, 5, 6, 7, 10});
         pagesView.setAdapter(pagesAdapter);
         pagesView.setSelection(pagesAdapter.getPositionForValue(totalPages));
         pagesView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -160,9 +162,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
 
         Spinner networkDelayView = (Spinner) findViewById(R.id.spinner_delay);
-        final IntegerAdapter delayAdapter = new IntegerAdapter(this, new int[]{1000, 2000, 3000, 5000});
+        final IntegerAdapter delayAdapter = new IntegerAdapter(this, new int[]{500, 1000, 2000, 3000, 5000});
         networkDelayView.setAdapter(delayAdapter);
-        networkDelayView.setSelection(delayAdapter.getPositionForValue(networkDelay));
+        networkDelayView.setSelection(delayAdapter.getPositionForValue((int) networkDelay));
         networkDelayView.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
@@ -198,8 +200,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             }
         });
 
-        // Recycler specific options
-
+        // RecyclerView specific options
         Spinner layoutManagerView = (Spinner) findViewById(R.id.spinner_layout_mng);
         final EnumAdapter<LayoutManagerEnum> layoutManagerAdapter = new EnumAdapter<>(this, LayoutManagerEnum.class);
         layoutManagerView.setAdapter(layoutManagerAdapter);
@@ -249,7 +250,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         });
 
         // AbsListView specific options
-
         Spinner absListViewTypeView = (Spinner) findViewById(R.id.spinner_abs_list_type);
         final EnumAdapter<AbsListViewType> absListViewTypeAdapter = new EnumAdapter<>(this, AbsListViewType.class);
         absListViewTypeView.setAdapter(absListViewTypeAdapter);

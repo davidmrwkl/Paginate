@@ -5,23 +5,28 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
 class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int ITEM_VIEW_TYPE_LOADING = Integer.MAX_VALUE - 50; // Magic
 
-    private final RecyclerView.Adapter wrappedAdapter;
+    private final RecyclerView.Adapter<RecyclerView.ViewHolder> wrappedAdapter;
     private final LoadingListItemCreator loadingListItemCreator;
     private boolean displayLoadingRow = true;
 
-    public WrapperAdapter(RecyclerView.Adapter adapter, LoadingListItemCreator creator) {
+    public WrapperAdapter(RecyclerView.Adapter<RecyclerView.ViewHolder> adapter, LoadingListItemCreator creator) {
         this.wrappedAdapter = adapter;
         this.loadingListItemCreator = creator;
+        this.setHasStableIds(adapter.hasStableIds());
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if (viewType == ITEM_VIEW_TYPE_LOADING) {
             return loadingListItemCreator.onCreateViewHolder(parent, viewType);
         } else {
@@ -30,7 +35,7 @@ class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (isLoadingRow(position)) {
             loadingListItemCreator.onBindViewHolder(holder, position);
         } else {
@@ -68,7 +73,19 @@ class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         wrappedAdapter.setHasStableIds(hasStableIds);
     }
 
-    public RecyclerView.Adapter getWrappedAdapter() {
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+        wrappedAdapter.onAttachedToRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onDetachedFromRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView);
+        wrappedAdapter.onDetachedFromRecyclerView(recyclerView);
+    }
+
+    public RecyclerView.Adapter<RecyclerView.ViewHolder> getWrappedAdapter() {
         return wrappedAdapter;
     }
 
@@ -79,7 +96,11 @@ class WrapperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     void displayLoadingRow(boolean displayLoadingRow) {
         if (this.displayLoadingRow != displayLoadingRow) {
             this.displayLoadingRow = displayLoadingRow;
-            notifyDataSetChanged();
+            if (this.displayLoadingRow) {
+                notifyItemInserted(wrappedAdapter.getItemCount());
+            } else {
+                notifyItemRemoved(wrappedAdapter.getItemCount());
+            }
         }
     }
 

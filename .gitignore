@@ -1,8 +1,28 @@
+# IntelliJ
+.idea
+*.iml
+*.iws
+*.ipr
+classes
+gen-external-apklibs
+
+# Eclipse
+.classpath
+.project
+.settings
+eclipsebin
+
+# Gradle
 .gradle
-/local.properties
+jniLibs
+build
+local.properties
+reports
+
+# macOS
 .DS_Store
 /build
 */build
-*.iml
-.idea
+
+# Artifactory publishing
 artifactory.properties

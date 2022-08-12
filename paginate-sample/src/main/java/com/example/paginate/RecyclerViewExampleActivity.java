@@ -1,5 +1,6 @@
 package com.example.paginate;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -47,7 +48,7 @@ public class RecyclerViewExampleActivity extends BaseActivity implements Paginat
             paginate.unbind();
         }
         handler.removeCallbacks(fakeCallback);
-        adapter = new RecyclerPersonAdapter(DataProvider.getRandomData(20));
+        adapter = new RecyclerPersonAdapter(DataProvider.getRandomData(initialItems));
         loading = false;
         page = 0;
 
@@ -56,7 +57,7 @@ public class RecyclerViewExampleActivity extends BaseActivity implements Paginat
             case HORIZONTAL:
                 layoutOrientation = OrientationHelper.HORIZONTAL;
                 break;
-            case VERTICAL:
+            case VERTICAL: // fall through
             default:
                 layoutOrientation = OrientationHelper.VERTICAL;
         }
@@ -84,16 +85,16 @@ public class RecyclerViewExampleActivity extends BaseActivity implements Paginat
         recyclerView.setAdapter(adapter);
 
         paginate = Paginate.with(recyclerView, this)
-                .setLoadingTriggerThreshold(threshold)
-                .addLoadingListItem(addLoadingRow)
-                .setLoadingListItemCreator(customLoadingListItem ? new CustomLoadingListItemCreator() : null)
-                .setLoadingListItemSpanSizeLookup(new LoadingListItemSpanLookup() {
-                    @Override
-                    public int getSpanSize() {
-                        return GRID_SPAN;
-                    }
-                })
-                .build();
+            .setLoadingTriggerThreshold(threshold)
+            .addLoadingListItem(addLoadingRow)
+            .setLoadingListItemCreator(customLoadingListItem ? new CustomLoadingListItemCreator() : null)
+            .setLoadingListItemSpanSizeLookup(new LoadingListItemSpanLookup() {
+                @Override
+                public int getSpanSize() {
+                    return GRID_SPAN;
+                }
+            })
+            .build();
     }
 
     @Override
@@ -131,6 +132,7 @@ public class RecyclerViewExampleActivity extends BaseActivity implements Paginat
             return new VH(view);
         }
 
+        @SuppressLint("DefaultLocale")
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             VH vh = (VH) holder;
