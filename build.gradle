@@ -1,35 +1,26 @@
 buildscript {
-    ext.versions = [
-        'minSdk'             : 16,
-        'targetSdk'          : 29,
-        'compileSdk'         : 29,
-        'sourceCompatibility': JavaVersion.VERSION_1_7,
-        'targetCompatibility': JavaVersion.VERSION_1_7
-    ]
-
-    ext.deps = [
-        // Library dependencies
-        recyclerview     : 'androidx.recyclerview:recyclerview:1.1.0',
-
-        // Sample project dependencies
-        appcompat        : 'androidx.appcompat:appcompat:1.2.0',
-        material         : 'com.google.android.material:material:1.2.0',
-        smoothprogressbar: 'com.github.castorflex.smoothprogressbar:library-circular:1.1.0'
-    ]
-
     repositories {
-        jcenter()
         google()
+        mavenCentral()
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.1'
+        classpath 'com.android.tools.build:gradle:4.2.2'
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.24.14"
     }
 }
 
 allprojects {
     repositories {
-        jcenter()
         google()
+        jcenter()
+        maven { url "https://jitpack.io" }
+        mavenCentral()
     }
+}
+
+ext {
+    minSdkVersion = 8
+    sampleMinSdkVersion = 15
+    targetSdkVersion = 30
+    compileSdkVersion = 30
 }

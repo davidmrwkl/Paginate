@@ -21,3 +21,8 @@ reports
 
 # macOS
 .DS_Store
+/build
+*/build
+
+# Artifactory publishing
+artifactory.properties
